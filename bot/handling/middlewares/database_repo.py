@@ -12,7 +12,7 @@ class DatabaseMiddleware(BaseMiddleware):
     def __init__(
             self,
             session_factory: Optional[sessionmaker | str],
-            context_name: str = 'db',
+            context_name: str = 'session',
     ) -> None:
         self.context_name = context_name
         if isinstance(session_factory, str):

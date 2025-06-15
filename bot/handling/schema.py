@@ -27,13 +27,13 @@ async def assemble(
     dp = await dispatcher_factory
     setup_dialogs(dp)
     dp.update.middleware(LoggingMiddleware())
-    # Track all users middleware on all updates
-    dp.update.middleware(TrackAllUsersMiddleware())
     t = TranslatorRunnerMiddleware()
     dp.message.middleware(t)
     dp.callback_query.middleware(t)
     db = DatabaseMiddleware('_db_session_maker')
     dp.message.middleware(db)
+    # Track all users middleware on all updates, needs session!
+    dp.message.middleware(TrackAllUsersMiddleware())
     dp.update.middleware(DialogResetMiddleware(init_state=Watermark.enter_text, mode=StartMode.RESET_STACK))
     dp.update.filter(ChatTypeFilter(ChatType.private))
     dp.include_routers(dialogs.watermark, start_router, get_user_router)

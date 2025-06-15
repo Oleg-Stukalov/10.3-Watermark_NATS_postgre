@@ -9,9 +9,25 @@ from logs.config import Config, LogsRenderer
 
 import datetime
 
+import traceback
+
 
 class AsyncBindableLogger(structlog.types.BindableLogger, structlog.stdlib.AsyncBoundLogger):  # type: ignore
     """Type fix for AsyncBoundLogger."""
+
+#####
+def exc_info_to_str(exc_info):
+    if not exc_info:
+        return None
+    exc_type, exc_value, exc_tb = exc_info
+    return ''.join(traceback.format_exception(exc_type, exc_value, exc_tb))
+
+#####
+def exc_info_to_str_processor(logger, method_name, event_dict):
+    exc_info = event_dict.get("exc_info")
+    if exc_info:
+        event_dict["exc_info"] = exc_info_to_str(exc_info)
+    return event_dict
 
 ##### solving problem with 'default' and not serializeable timedelta
 def orjson_dumps(obj, *, default=None):
@@ -19,6 +35,16 @@ def orjson_dumps(obj, *, default=None):
         if isinstance(x, (datetime.datetime, datetime.date, datetime.timedelta)):
             return str(x)
         raise TypeError
+
+    def fallback(x):
+        if isinstance(x, (datetime.datetime, datetime.date, datetime.timedelta)):
+            return str(x)
+        # Try to convert SQLAlchemy model to dict if it has __dict__ or a custom method
+        if hasattr(x, "__dict__"):
+            # Or return a dict of relevant attributes (customize as needed)
+            return {k: v for k, v in vars(x).items() if not k.startswith('_')}
+        # As last resort, convert unknown type to string
+        return str(x)
 
     return orjson.dumps(obj, default=fallback).decode()
 
@@ -28,6 +54,8 @@ def startup(config: Config) -> None:
         structlog.processors.add_log_level,
         structlog.processors.StackInfoRenderer(),
         structlog.dev.set_exc_info,
+        #####
+        exc_info_to_str_processor,
         structlog.processors.TimeStamper(fmt=config.time_format, utc=config.utc),
     ]
 
@@ -70,8 +98,3 @@ def startup(config: Config) -> None:
         wrapper_class=AsyncBindableLogger,
         cache_logger_on_first_use=True,
     )
-
-    #####
-    # print(f"***Config renderer: {config.renderer} (type: {type(config.renderer)})")
-    # print(f"***LogsRenderer.json: {LogsRenderer.json} (type: {type(LogsRenderer.json)})")
-    # print(f"***Equality test: {config.renderer == LogsRenderer.json}")
