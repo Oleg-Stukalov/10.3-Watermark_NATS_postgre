@@ -33,3 +33,4 @@ async def test_cmd_start(dp, bot):
     outgoing_message: TelegramType = bot.get_request()
     assert isinstance(outgoing_message, SendMessage)
     assert outgoing_message.text == "Привет!"
+    ###assert outgoing_message.text == "Type watermark text"

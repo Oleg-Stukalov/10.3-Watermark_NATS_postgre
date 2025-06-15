@@ -71,7 +71,27 @@ services:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
       POSTGRES_DB: bot
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     profiles:
       - without_bot
       - infrastructure
       - all
+
+  alembic:
+      build:
+        context: .
+        dockerfile: database/migration/Dockerfile
+      command: ["poetry", "run", "alembic", "upgrade", "head"]
+      depends_on:
+        - postgres
+      environment:
+        APP_CONF_SETTINGS_FILES: "/app/settings.toml,/app/.secrets.toml"
+      volumes:
+        - ./settings.toml:/app/settings.toml:ro
+        - ./.secrets.toml:/app/.secrets.toml:ro
+      profiles:
+        - manual
+
+volumes:
+  pgdata:

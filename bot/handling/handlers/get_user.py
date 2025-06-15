@@ -9,7 +9,7 @@ from database.models import User
 get_user_router = Router()
 
 
-@get_user_router.message(Command("get_info"))
+@get_user_router.message(Command("get_user"))
 async def get_user_handler(msg: Message, i18n: TranslatorRunner, db: AsyncSession):
     user = await db.get(User, msg.from_user.id)
     await msg.answer(i18n.db_get_user(user=user))

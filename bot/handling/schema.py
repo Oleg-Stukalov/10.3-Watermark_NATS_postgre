@@ -13,6 +13,7 @@ from bot.handling.middlewares import (
     DialogResetMiddleware,
     TranslatorRunnerMiddleware,
     DatabaseMiddleware,
+    TrackAllUsersMiddleware,
 )
 from bot.handling.middlewares.logging import LoggingMiddleware
 from bot.handling.states import Watermark
@@ -26,6 +27,8 @@ async def assemble(
     dp = await dispatcher_factory
     setup_dialogs(dp)
     dp.update.middleware(LoggingMiddleware())
+    # Track all users middleware on all updates
+    dp.update.middleware(TrackAllUsersMiddleware())
     t = TranslatorRunnerMiddleware()
     dp.message.middleware(t)
     dp.callback_query.middleware(t)
