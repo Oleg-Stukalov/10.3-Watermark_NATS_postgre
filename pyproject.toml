@@ -28,6 +28,10 @@ rich = "^13.7.0"
 faststream = "^0.5.28"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+pytest-asyncio = "^1.0.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
