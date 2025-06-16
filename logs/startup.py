@@ -41,7 +41,7 @@ def orjson_dumps(obj, *, default=None):
             return str(x)
         # Try to convert SQLAlchemy model to dict if it has __dict__ or a custom method
         if hasattr(x, "__dict__"):
-            # Or return a dict of relevant attributes (customize as needed)
+            # Or return a dict of relevant attributes
             return {k: v for k, v in vars(x).items() if not k.startswith('_')}
         # As last resort, convert unknown type to string
         return str(x)
@@ -49,6 +49,7 @@ def orjson_dumps(obj, *, default=None):
     return orjson.dumps(obj, default=fallback).decode()
 
 def startup(config: Config) -> None:
+    # ... sets up structlog with AsyncBindableLogger
     pre_chain = [
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,

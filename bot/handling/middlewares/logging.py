@@ -31,7 +31,8 @@ class LoggingMiddleware(BaseMiddleware):
             end_time = datetime.now()
             await self.logger.exception(
                 'Abnormal handling event detected, critical error happened',
-                e,
+                #####
+                ###e,
                 start_time=start_time,
                 end_time=end_time,
                 execution_time=(end_time - start_time).microseconds,

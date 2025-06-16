@@ -32,5 +32,5 @@ async def test_cmd_start(dp, bot):
     assert result is not UNHANDLED
     outgoing_message: TelegramType = bot.get_request()
     assert isinstance(outgoing_message, SendMessage)
-    assert outgoing_message.text == "Привет!"
-    ###assert outgoing_message.text == "Type watermark text"
+    ###assert outgoing_message.text == "Привет!"
+    assert outgoing_message.text == "Type watermark text"

@@ -33,7 +33,9 @@ async def main() -> None:  # noqa: WPS217
     except KeyboardInterrupt:
         await logger.info('Shutdown by external call ( KeyboardInterrupt )')
     except Exception as e:
-        await logger.exception('Abnormal shutdown detected, critical error happened', e)
+        #####
+        ###await logger.exception('Abnormal shutdown detected, critical error happened', e)
+        await logger.exception('Abnormal shutdown detected, critical error happened')
 
 if __name__ == '__main__':
     asyncio.run(main())
